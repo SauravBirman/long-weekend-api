@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Long Weekend Checker</title>
+  <style>
+    body {
+      background: #121212;
+      color: #f1f1f1;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      color: #ffcc00;
+    }
+
+    select,
+    button {
+      padding: 10px;
+      margin: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #ffcc00;
+      color: black;
+      border: none;
+      cursor: pointer;
+    }
+
+    .result {
+      margin-top: 30px;
+      text-align: left;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .card {
+      background-color: #2b2b2b;
+      margin: 10px 0;
+      padding: 10px;
+      border-left: 5px solid #ffcc00;
+      border-radius: 6px;
+    }
+
+    .date {
+      color: #00e676;
+    }
+
+    .holiday {
+      color: #90caf9;
+    }
+
+    .days {
+      color: #ccc;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🗓️ Long Weekend Checker</h1>
+
+  <div>
+    <label for="country">🌐 Country Code:</label>
+    <select id="country">
+      <option value="US">United States</option>
+      <option value="DE">Germany</option>
+      <option value="FR">France</option>
+      <option value="GB">United Kingdom</option>
+      <option value="JP">Japan</option>
+      <option value="CA">Canada</option>
+      <option value="AU">Australia</option>
+    </select>
+
+    <label for="type">🔎 Type:</label>
+    <select id="type">
+      <option value="long-weekends">All Long Weekends</option>
+      <option value="next-long-weekend">Next Long Weekend</option>
+    </select>
+
+    <br>
+    <button onclick="fetchData()">Fetch</button>
+  </div>
+
+  <div id="result" class="result">Choose a country and type to get started.</div>
+
+  <script>
+    async function fetchData() {
+      const country = document.getElementById("country").value;
+      const type = document.getElementById("type").value;
+      const resultDiv = document.getElementById("result");
+
+      resultDiv.innerHTML = "Fetching data...";
+
+      try {
+        const res = await fetch(`http://localhost:3000/${type}/${country}`);
+        const data = await res.json();
+
+        resultDiv.innerHTML = "";
+
+        if (type === "long-weekends") {
+          if (!data.longWeekends || data.longWeekends.length === 0) {
+            resultDiv.innerHTML = "<p>No long weekends found.</p>";
+            return;
+          }
+
+          data.longWeekends.forEach(w => {
+            const div = document.createElement("div");
+            div.className = "card";
+            div.innerHTML = `
+              <div><strong>📅 ${w.startDate} to ${w.endDate}</strong></div>
+              <div class="days">🗓️ ${w.numberOfDays} days: ${w.days.join(", ")}</div>
+              <div class="holiday">🎉 Holiday: ${w.holiday}</div>
+            `;
+            resultDiv.appendChild(div);
+          });
+        } else if (type === "next-long-weekend") {
+          if (!data.nextLongWeekend) {
+            resultDiv.innerHTML = "<p>No upcoming long weekend found.</p>";
+            return;
+          }
+
+          const w = data.nextLongWeekend;
+          const div = document.createElement("div");
+          div.className = "card";
+          div.innerHTML = `
+            <div><strong>📅 ${w.startDate} to ${w.endDate}</strong></div>
+            <div class="days">🗓️ ${w.numberOfDays} days: ${w.days.join(", ")}</div>
+            <div class="holiday">🎉 Holiday: ${w.holiday}</div>
+          `;
+          resultDiv.appendChild(div);
+        }
+      } catch (err) {
+        console.error(err);
+        resultDiv.innerHTML = "<p style='color:red;'>❌ Error fetching data.</p>";
+      }
+    }
+  </script>
+</body>
+
+</html>
