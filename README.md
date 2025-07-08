@@ -23,3 +23,10 @@ Use the dropdown to select the country and type (all or next). The results will 
 ```bash
 git clone https://github.com/YOUR_USERNAME/long-weekend-finder.git
 cd long-weekend-finder
+npm install
+npm start
+```
+## Open the frontend
+```bash
+Go to http://localhost:3000 in your browser
+```
