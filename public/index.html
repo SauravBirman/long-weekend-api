@@ -101,7 +101,8 @@
       resultDiv.innerHTML = "Fetching data...";
 
       try {
-        const res = await fetch(`http://localhost:3000/${type}/${country}`);
+        const res = await fetch(`/${type}/${country}`);
+
         const data = await res.json();
 
         resultDiv.innerHTML = "";
